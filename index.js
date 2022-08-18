@@ -1,4 +1,6 @@
 const inquirer = require('inquirer');
+require('console.table')
+const db = require('./db')
 
 const businessMenu = [
     {
@@ -9,50 +11,50 @@ const businessMenu = [
     }
 ]
 
-const addDept =[
+const addDept = [
     {
         type: 'input',
-        name : 'newDept',
+        name: 'newDept',
         message: "What is the name of your new department?",
     }
 ]
 
 const addRole = [
     {
-        type:'input',
-        name:'newRoleName',
-        message:'What is the name of the new role?'
+        type: 'input',
+        name: 'newRoleName',
+        message: 'What is the name of the new role?'
     },
     {
-        type:'input',
-        name:'newRoleSalary',
-        message:'What is the salary of the new role?'
+        type: 'input',
+        name: 'newRoleSalary',
+        message: 'What is the salary of the new role?'
     },
     {
-        type:'input',
-        name:'newRoleDept',
-        message:'Into which department should this role be added?'
+        type: 'input',
+        name: 'newRoleDept',
+        message: 'Into which department should this role be added?'
     },
 ]
 
 const addEmployee = [
     {
-        type:'input',
-        name:'newEmployeeFirstName',
-        message:'What is the first name of the employee?'
+        type: 'input',
+        name: 'newEmployeeFirstName',
+        message: 'What is the first name of the employee?'
     },
     {
-        type:'input',
-        name:'newEmployeeSecondName',
-        message:'What is the last name of the employee?'
+        type: 'input',
+        name: 'newEmployeeSecondName',
+        message: 'What is the last name of the employee?'
     },
     {
-        type:'input',
-        name:'newEmployeeRole',
-        message:'What is role of the employee to be added?'
+        type: 'input',
+        name: 'newEmployeeRole',
+        message: 'What is role of the employee to be added?'
     },
     {
-        type:'input',
+        type: 'input',
         name: 'newEmployeeDept',
         message: 'Which department should this employee be added?'
     },
@@ -60,16 +62,16 @@ const addEmployee = [
 
 const updateRole = [
     {
-        type:'input',
-        name:'updateRole',
+        type: 'input',
+        name: 'updateRole',
         message: "What is this employee's new role?"
     }
 ]
 
 
-function ask () {
+function ask() {
     inquirer.prompt(businessMenu).then((answers) => {
-        switch (userChoice.menu) {
+        switch (answers.menu) {
             //after a case is chosen, the user will be directed to the associated function
             case 'View all departments':
                 viewDepts();
@@ -78,25 +80,37 @@ function ask () {
                 viewRoles();
                 break;
             case 'View all Employees':
-                viewEmployees();
-                 break;
+                // viewEmployees();
+                break;
             case 'Add a department':
-                addDept();
+                // addDept();
                 break;
             case 'Add a role':
-                addRole();
+                // addRole();
                 break;
             case 'Add an employee':
-                addEmployee();
+                // addEmployee();
                 break;
             case 'Update an employee role':
-                updateRole();
+                // updateRole();
                 break;
         };
     });
 }
 
+function viewDepts() {
+    db.findDepartments().then(([data]) => {
+        console.table(data)
+    }).then(() => ask());
+}
 
-   
+function viewRoles(){
+    db.findRoles().then(([data]) => {
+        console.table(data)
+    }).then(() => ask());
+}
+
+
 
 ask();
+
