@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const { findDepartments } = require('./db');
+const { findDepartments, findEmployees } = require('./db');
 require('console.table')
 const db = require('./db')
 
@@ -84,16 +84,16 @@ function ask() {
                 viewEmployees();
                 break;
             case 'Add a department':
-                // addDept();
+                addDept();
                 break;
             case 'Add a role':
-                // addRole();
+                addRole();
                 break;
             case 'Add an employee':
-                // addEmployee();
+                addEmployee();
                 break;
             case 'Update an employee role':
-                // updateRole();
+                updateRole();
                 break;
             //if user is done, exit
             default:
@@ -164,15 +164,49 @@ function addRole() {
                     },
                 ])
                 .then((answer) => {
-                    db.createRole(answer).then(() => businessMenu ());
+                    db.addRole(answer).then(() => businessMenu ());
                 })
         );
     });
 }
 
 //update employee function
-function updateEmployeeRole() {
-    
+function updateRole() {
+    db.findEmployees().then(([data]) => {
+        let employee = data;
+        const employeeList = employee.map(({first_name, last_name, id}) => ({
+            name: first_name, last_name,
+            value: id,
+        }));
+        db.findRoles().then(([data])=> {
+            let role = data;
+            const roleList = role.map(({ id, title}) => ({
+                name: title,
+                value: id,
+            }));
+
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'employeeId',
+                    message: 'Which employee would you like to update?',
+                    choice: employeeList,
+                },
+                {
+                    type: 'list',
+                    name: 'role_id',
+                    message: 'Which role is this employee associated with?',
+                    choices: roleList
+                },
+            ])
+            .then((answer) => {
+                const role_id = answer.role_id;
+                const employeeId = answer.employeeId;
+                db.updateRole(employeeId, role_id).then(() => businessMenu());
+            });
+        });
+    });
 }
 
 
