@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const { findDepartments } = require('./db');
 require('console.table')
 const db = require('./db')
 
@@ -7,7 +8,7 @@ const businessMenu = [
         type: 'list',
         name: 'menu',
         message: 'Choose what you would like to do:',
-        choices: ['View all departments', 'View all roles', 'View all Employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role']
+        choices: ['View all departments', 'View all roles', 'View all Employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Exit']
     }
 ]
 
@@ -80,7 +81,7 @@ function ask() {
                 viewRoles();
                 break;
             case 'View all Employees':
-                // viewEmployees();
+                viewEmployees();
                 break;
             case 'Add a department':
                 // addDept();
@@ -94,6 +95,9 @@ function ask() {
             case 'Update an employee role':
                 // updateRole();
                 break;
+            //if user is done, exit
+            default:
+                process.exit();
         };
     });
 }
@@ -104,12 +108,72 @@ function viewDepts() {
     }).then(() => ask());
 }
 
-function viewRoles(){
+function viewRoles() {
     db.findRoles().then(([data]) => {
         console.table(data)
     }).then(() => ask());
 }
 
+function viewEmployees() {
+    db.findEmployees().then(([data]) => {
+        console.table(data)
+    }).then(() => ask());
+}
+
+function addRole() {
+    db.findDepartments().then(([data]) => {
+        let deptartment = data;
+        const departmentList = data.map(({ name, id }) => ({
+            name: name,
+            value: id
+        }));
+        return (
+            inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        name: 'title',
+                        message: 'What role would you like to add?',
+                        validate: (roleTitle) => {
+                            if (titleInput) {
+                                return true;
+                            } else {
+                                console.log('Please enter the role name');
+                                return false;
+                            }
+                        },
+                    },
+                    {
+                        type: 'input',
+                        name: 'Salary',
+                        message: 'What is the salary associated with this role?',
+                        validate: (roleSalary) => {
+                            if (roleSalary) {
+                                return true;
+                            } else {
+                                console.log('Please enter the salary of this role');
+                                return false;
+                            }
+                        },
+                    },
+                    {
+                        type: 'list',
+                        name: 'deptartment_id',
+                        message: 'Which deptartment is assoicated with this role?',
+                        choices: departmentList,
+                    },
+                ])
+                .then((answer) => {
+                    db.createRole(answer).then(() => businessMenu ());
+                })
+        );
+    });
+}
+
+//update employee function
+function updateEmployeeRole() {
+    
+}
 
 
 ask();

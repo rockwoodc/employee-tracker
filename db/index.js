@@ -10,27 +10,29 @@ class Query {
     }
 
     findRoles() {
-        return this.db.promise().query('SELECT role.title, FROM role LEFT JOIN department ON role.department_id = department.id')
+        // job title, role id, the department that role belongs to, and the salary for that role
+        return this.db.promise().query('SELECT role.title, role.id, department.name, role.salary FROM role LEFT JOIN department ON role.department_id = department.id;')
     }
 
     findEmployees() {
-        return this.db.promise().query('SELECT employee.name, FROM emplpoyee LEFT JOIN role ON employee.role_id = role.id')
+        // employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+        return this.db.promise().query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, CONCAT(manager.first_name, " ",manager.last_name) AS manager_name FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee AS manager ON  manager.id = employee.manager_id;')
     }
 
-    createDepartment() {
-        return this.db.promise().query('INSERT INTO department (name) VALUE (?)')
+    createDepartment(department) {
+        return this.db.promise().query('INSERT INTO department SET ?', department)
     }
 
-    createRole() {
-        return this.db.promise().query('INSERT INTO role (title, salary, department_id)VALUES (?,?,?')
+    createRole(role) {
+        return this.db.promise().query('INSERT INTO role SET ?', role)
     }
 
     createEmployee() {
         return this.db.promise().query('INSERT INTO candidates (first_name, last_name, role_id, manager_id)VALUES (?,?,?,?')
     }
 
-    updateEmployeeRole() {
-        return this.db.promise().query('UPDATE employee SET employee.role_id = ? WHERE role_id = ?')
+    updateEmployeeRole(empId, roleId) {
+        return this.db.promise().query('UPDATE employee SET role_id = ? WHERE id = ?', [roleId, empId])
     }
 }
 
