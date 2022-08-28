@@ -219,9 +219,15 @@ function addEmployee() {
                         message: 'Which role is assoicated with this employee?',
                         choices: roleList,
                     },
+                    {
+                        type: 'list',
+                        name: 'manager_id',
+                        message: 'Which manager oversees this employee?',
+                        choices: roleList,
+                    },
                 ])
                 .then((answer) => {
-                    db.addNewRole(answer).then(() => businessMenu ());
+                    db.addNewEmployee(answer).then(() => businessMenu ());
                 })
         );
     });
@@ -232,16 +238,17 @@ function updateRole() {
     db.findEmployees().then(([data]) => {
         let employee = data;
         const employeeList = employee.map(({first_name, last_name, id}) => ({
-            name: first_name, last_name,
+            name: `${first_name} ${last_name}`,
             value: id,
         }));
         db.findRoles().then(([data])=> {
-            let role = data;
-            const roleList = role.map(({ id, title}) => ({
-                name: title,
-                value: id,
-            }));
-
+        let role = data;
+        const roleList = role.map(({ id, title}) => ({
+            name: `${title}`,
+            value: id,
+        }));
+    
+        return (
         inquirer
             .prompt([
                 {
@@ -261,9 +268,10 @@ function updateRole() {
                 const role_id = answer.role_id;
                 const employeeId = answer.employeeId;
                 db.updateRole(employeeId, role_id).then(() => businessMenu());
-            });
-        });
+            })
+        );
     });
+});
 }
 
 function addDept() {
