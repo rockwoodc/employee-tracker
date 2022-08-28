@@ -12,62 +12,62 @@ const businessMenu = [
     }
 ]
 
-const addDept = [
-    {
-        type: 'input',
-        name: 'newDept',
-        message: "What is the name of your new department?",
-    }
-]
+// const addDept = [
+//     {
+//         type: 'input',
+//         name: 'newDept',
+//         message: "What is the name of your new department?",
+//     }
+// ]
 
-const addRole = [
-    {
-        type: 'input',
-        name: 'newRoleName',
-        message: 'What is the name of the new role?'
-    },
-    {
-        type: 'input',
-        name: 'newRoleSalary',
-        message: 'What is the salary of the new role?'
-    },
-    {
-        type: 'input',
-        name: 'newRoleDept',
-        message: 'Into which department should this role be added?'
-    },
-]
+// const addRole = [
+//     {
+//         type: 'input',
+//         name: 'newRoleName',
+//         message: 'What is the name of the new role?'
+//     },
+//     {
+//         type: 'input',
+//         name: 'newRoleSalary',
+//         message: 'What is the salary of the new role?'
+//     },
+//     {
+//         type: 'input',
+//         name: 'newRoleDept',
+//         message: 'Into which department should this role be added?'
+//     },
+// ]
 
-const addEmployee = [
-    {
-        type: 'input',
-        name: 'newEmployeeFirstName',
-        message: 'What is the first name of the employee?'
-    },
-    {
-        type: 'input',
-        name: 'newEmployeeSecondName',
-        message: 'What is the last name of the employee?'
-    },
-    {
-        type: 'input',
-        name: 'newEmployeeRole',
-        message: 'What is role of the employee to be added?'
-    },
-    {
-        type: 'input',
-        name: 'newEmployeeDept',
-        message: 'Which department should this employee be added?'
-    },
-]
+// const addEmployee = [
+//     {
+//         type: 'input',
+//         name: 'newEmployeeFirstName',
+//         message: 'What is the first name of the employee?'
+//     },
+//     {
+//         type: 'input',
+//         name: 'newEmployeeSecondName',
+//         message: 'What is the last name of the employee?'
+//     },
+//     {
+//         type: 'input',
+//         name: 'newEmployeeRole',
+//         message: 'What is role of the employee to be added?'
+//     },
+//     {
+//         type: 'input',
+//         name: 'newEmployeeDept',
+//         message: 'Which department should this employee be added?'
+//     },
+// ]
 
-const updateRole = [
-    {
-        type: 'input',
-        name: 'updateRole',
-        message: "What is this employee's new role?"
-    }
-]
+// const updateRole = [
+//     {
+//         type: 'input',
+//         name: 'updateRole',
+//         message: "What is this employee's new role?"
+//     }
+// ]
 
 
 function ask() {
@@ -134,7 +134,7 @@ function addRole() {
                         type: 'input',
                         name: 'title',
                         message: 'What role would you like to add?',
-                        validate: (roleTitle) => {
+                        validate: (titleInput) => {
                             if (titleInput) {
                                 return true;
                             } else {
@@ -164,7 +164,64 @@ function addRole() {
                     },
                 ])
                 .then((answer) => {
-                    db.addRole(answer).then(() => businessMenu ());
+                    db.addNewRole(answer).then(() => businessMenu ());
+                })
+        );
+    });
+}
+
+function addEmployee() {
+    db.findRoles().then(([data]) => {
+        let role = data;
+        const roleList = data.map(({ title, id }) => ({
+            name: title,
+            value: id
+        }));
+        db.findEmployees().then(([data]) => {
+            let employee = data;
+            const employeeList = employee.map(({first_name, last_name, id}) => ({
+                name: first_name, last_name,
+                value: id,
+            }));
+        })
+        return (
+            inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        name: 'first_name',
+                        message: 'What is the employees first name?',
+                        validate: (first_nameInput) => {
+                            if (first_nameInput) {
+                                return true;
+                            } else {
+                                console.log('Please enter the first name');
+                                return false;
+                            }
+                        },
+                    },
+                    {
+                        type: 'input',
+                        name: '_name',
+                        message: 'What is the employees last name?',
+                        validate: (last_nameInput) => {
+                            if (last_nameInput) {
+                                return true;
+                            } else {
+                                console.log('Please enter the last name');
+                                return false;
+                            }
+                        },
+                    },
+                    {
+                        type: 'list',
+                        name: 'role_id',
+                        message: 'Which role is assoicated with this employee?',
+                        choices: roleList,
+                    },
+                ])
+                .then((answer) => {
+                    db.addNewRole(answer).then(() => businessMenu ());
                 })
         );
     });
@@ -207,6 +264,31 @@ function updateRole() {
             });
         });
     });
+}
+
+function addDept() {
+    return (
+        inquirer
+        .prompt([
+            {
+                type: 'input',
+                name: 'name',
+                message: "What is the department you'd like to add?",
+                validate: (nameInput) => {
+                    if (nameInput) {
+                        return true;
+                    }else {
+                        console.log('Please enter a department name');
+                        return false;
+                    }
+                },
+            },
+        ])
+        //adds to table
+        .then((answer) => {
+            db.createDepartment(answer).then(() => businessMenu());
+        })
+    );
 }
 
 
