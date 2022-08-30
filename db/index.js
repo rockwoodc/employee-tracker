@@ -27,8 +27,8 @@ class Query {
         return this.db.promise().query('INSERT INTO role SET ?', role)
     }
 
-    createEmployee() {
-        return this.db.promise().query('INSERT INTO candidates (first_name, last_name, role_id, manager_id)VALUES (?,?,?,?')
+    createEmployee(employee) {
+        return this.db.promise().query('INSERT INTO employee SET ?', employee)
     }
 
     updateEmployeeRole(empId, roleId) {
