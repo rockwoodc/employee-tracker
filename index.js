@@ -3,6 +3,7 @@ const { findDepartments, findEmployees } = require("./db");
 require("console.table");
 const db = require("./db");
 
+//Main menu that will appear first and after each completed section
 const businessMenu = [
   {
     type: "list",
@@ -21,6 +22,7 @@ const businessMenu = [
   },
 ];
 
+//how each menu function is called
 function ask() {
   inquirer.prompt(businessMenu).then((answers) => {
     switch (answers.menu) {
@@ -53,6 +55,7 @@ function ask() {
   });
 }
 
+//console log a table of the departments
 function viewDepts() {
   db.findDepartments()
     .then(([data]) => {
@@ -61,6 +64,7 @@ function viewDepts() {
     .then(() => ask());
 }
 
+//console log a table of the roles
 function viewRoles() {
   db.findRoles()
     .then(([data]) => {
@@ -69,6 +73,7 @@ function viewRoles() {
     .then(() => ask());
 }
 
+//console log a table of the employees
 function viewEmployees() {
   db.findEmployees()
     .then(([data]) => {
@@ -77,6 +82,7 @@ function viewEmployees() {
     .then(() => ask());
 }
 
+//prompts for adding a role
 function addRole() {
   db.findDepartments().then(([data]) => {
     let deptartment = data;
@@ -119,12 +125,14 @@ function addRole() {
           choices: departmentList,
         },
       ])
+      //creates role and then returns user to menu
       .then((answer) => {
         db.createRole(answer).then(() => ask());
       });
   });
 }
 
+//add an employee prompts
 function addEmployee() {
   db.findRoles().then(([data]) => {
     let role = data;
@@ -185,6 +193,7 @@ function addEmployee() {
             choices: employeeList,
           },
         ])
+        //creates employee and then returns user to menu
         .then((answer) => {
           db.createEmployee(answer).then(() => ask());
         });
@@ -224,6 +233,7 @@ function updateRole() {
             choices: roleList,
           },
         ])
+        //updates employee and returns user to menu
         .then((answer) => {
           const role_id = answer.role_id;
           const employeeId = answer.employeeId;
@@ -233,6 +243,7 @@ function updateRole() {
   });
 }
 
+//add a department prompts
 function addDept() {
   return (
     inquirer
@@ -251,7 +262,7 @@ function addDept() {
           },
         },
       ])
-      //adds to table
+      ////add new department and then returns user to menu
       .then((answer) => {
         db.createDepartment(answer).then(() => ask());
       })
